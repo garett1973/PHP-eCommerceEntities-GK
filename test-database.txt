@@ -1,0 +1,18 @@
+GOAL: Create an in-memory test database, which starts in the same state for every test
+
+WHY:
+1. Streamlined workflow. Whilst developing doctrine entities and processes which rely on db CRUD.
+    - want to avoid skipping between the browser, the database and our editor.
+2. Want our data to be in a consistent state for every test.
+
+HOW:
+1. Use a dedicated sqlite in-memory database which is only used for testing.
+2. Enable our tests to read our entity metadata and automatically create the fresh schema before each test.
+
+STEPS:
+1. Create a bootstrap-test.php file.
+2. Create a test case class that can be extended by test classes which interact with the database
+    - this will contain setUp and tearDown methods that load our schema and our entityManager
+3. Create a tool which will look at our entity metadata and create the tables (in-memory)
+4. Add an entry in composer.json to enable the autoloader to find our test files
+    - dump-autoload
