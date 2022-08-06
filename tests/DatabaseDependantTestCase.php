@@ -32,6 +32,9 @@ class DatabaseDependantTestCase extends TestCase
     public function asKeyValuesString(array $criteria, $separator = ' = ')
     {
         $mappedAttributes = array_map(function ($key, $value) use ($separator) {
+            if ($value instanceof \DateTimeInterface) {
+                $value = $value->format('Y-m-d');
+            }
             return $key . $separator . $value;
         }, array_keys($criteria), $criteria);
         return implode(', ', $mappedAttributes);

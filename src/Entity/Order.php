@@ -35,6 +35,12 @@ class Order
     private $createdAt;
 
     /**
+     * @ORM\Column(type="datetime", name="cancelled_at", nullable=true)
+     * @var DateTimeInterface
+     */
+    private ?\DateTimeImmutable $cancelledAt = null;
+
+    /**
      * @return mixed
      */
     public function getId()
@@ -86,4 +92,22 @@ class Order
     {
         $this->createdAt = new \DateTimeImmutable();
     }
+
+    /**
+     * @return \DateTimeImmutable|null
+     */
+    public function getCancelledAt(): ?\DateTimeImmutable
+    {
+        return $this->cancelledAt;
+    }
+
+    /**
+     * @param \DateTimeImmutable|null $cancelledAt
+     */
+    public function setCancelledAt(?\DateTimeImmutable $cancelledAt): void
+    {
+        $this->cancelledAt = $cancelledAt;
+    }
+
+
 }
