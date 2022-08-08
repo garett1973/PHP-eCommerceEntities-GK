@@ -20,12 +20,12 @@ class Order
     private $id;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", name="delivery_name")
      */
     private $deliveryName;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text", name="delivery_address")
      */
     private $deliveryAddress;
 

@@ -40,7 +40,44 @@ class DatabaseDependantTestCase extends TestCase
         return implode(', ', $mappedAttributes);
     }
 
-    public function assertDatabaseHas(string $entity, array $criteria)
+    public function assertDatabaseHas(string $tableName, array $criteria)
+    {
+        // Get SQL placeholders for the attributes
+        $sqlParameters = $keys = array_keys($criteria);
+
+        $firstColumn = array_shift($sqlParameters);
+
+        //Create base SQL query
+        // SELECT 1 FROM tableName WHERE columnName = :columnName
+        $sql = 'SELECT 1 FROM ' . $tableName . ' WHERE ' .  $firstColumn . ' = :' . $firstColumn;
+
+        // if more than one filter needed, loop over remaining attributes and add to query
+        foreach ($sqlParameters as $column) {
+            $sql .= ' AND ' . $column . ' = :' . $column;
+        }
+
+        // Create a stmt
+        $connection = $this->entityManager->getConnection();
+        $stmt = $connection->prepare($sql);
+
+        // Bind the values
+        foreach ($keys as $key) {
+            $stmt->bindValue(':' . $key, $criteria[$key]);
+        }
+
+        $keyValueString = $this->asKeyValuesString($criteria);
+
+        $failureMessage = "A record could not be found in the $tableName table with the following criteria: $keyValueString";
+
+
+        // Execute the stmt
+        $result = $stmt->executeQuery();
+
+        // Assert the result
+        $this->assertTrue((bool) $result->fetchOne(), $failureMessage);
+    }
+
+    public function assertDatabaseHasEntity(string $entity, array $criteria)
     {
         $result = $this->entityManager->getRepository($entity)->findOneBy($criteria);
         $keyValues = $this->asKeyValuesString($criteria);

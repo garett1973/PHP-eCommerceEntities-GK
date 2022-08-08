@@ -43,7 +43,7 @@ class OrdersTests extends DatabaseDependantTestCase
         $this->entityManager->flush();
 
         // Assert
-        $this->assertDatabaseHas(Order::class, [
+        $this->assertDatabaseHasEntity(Order::class, [
             'deliveryName' => $this->deliveryName,
             'deliveryAddress' => $this->deliveryAddress,
             'cancelledAt' => null,
@@ -75,7 +75,7 @@ class OrdersTests extends DatabaseDependantTestCase
             'deliveryAddress' => $newDeliveryAddress,
         ]);
         // Assert
-        $this->assertDatabaseHas(Order::class, [
+        $this->assertDatabaseHasEntity(Order::class, [
             'deliveryName' => $newDeliveryName,
             'deliveryAddress' => $newDeliveryAddress,
         ]);
@@ -107,7 +107,7 @@ class OrdersTests extends DatabaseDependantTestCase
         $this->entityManager->flush();
 
         // Assert
-        $this->assertDatabaseHas(Order::class, [
+        $this->assertDatabaseHasEntity(Order::class, [
             'deliveryName' => $this->deliveryName,
             'deliveryAddress' => $this->deliveryAddress,
             'cancelledAt' => $cancelledAt
@@ -158,7 +158,9 @@ class OrdersTests extends DatabaseDependantTestCase
         // Assert
         // The item is in the order
 
-        $this->assertDatabaseHas(Item::class, [
+        $this->assertDatabaseHas('items', [
+            'order_id' => $order->getId(),
+            'product_id' => $product->getId(),
             'price' => $product->getPrice(),
         ]);
 
@@ -213,7 +215,7 @@ class OrdersTests extends DatabaseDependantTestCase
         // Assert
         // The item is in the order
 
-        $this->assertDatabaseHas(Item::class, [
+        $this->assertDatabaseHasEntity(Item::class, [
             'price' => $product->getPrice(),
         ]);
 
