@@ -2,7 +2,9 @@
 
 namespace App\Tests;
 
+use App\Entity\Item;
 use App\Entity\Order;
+use App\Entity\Product;
 
 class OrdersTests extends DatabaseDependantTestCase
 {
@@ -110,5 +112,112 @@ class OrdersTests extends DatabaseDependantTestCase
             'deliveryAddress' => $this->deliveryAddress,
             'cancelledAt' => $cancelledAt
         ]);
+    }
+
+    // item tests
+    /**
+     * @test
+     */
+    public function an_item_can_be_added_to_an_order()
+    {
+        // Setup
+        // Need a product for the order
+
+
+        $name = 'Product 1 Name';
+        $description = 'Product 1 Description';
+        $price = 10099;
+
+        $product = new Product();
+        $product->setName($name);
+        $product->setDescription($description);
+        $product->setPrice($price);
+
+        $this->entityManager->persist($product);
+        $this->entityManager->flush();
+
+        // Need an order for the item
+
+        $order = $this->entityManager->getRepository(Order::class)->findOneBy([
+            'deliveryName' => $this->deliveryName,
+            'deliveryAddress' => $this->deliveryAddress,
+        ]);
+
+        // Act
+        // Create an item using refs to the order and product
+
+        $item = new Item();
+        $item->setOrder($order);
+        $item->setProduct($product);
+        $item->setPrice($product->getPrice());
+
+
+        $this->entityManager->persist($item);
+        $this->entityManager->flush();
+
+        // Assert
+        // The item is in the order
+
+        $this->assertDatabaseHas(Item::class, [
+            'price' => $product->getPrice(),
+        ]);
+
+        // Check that we can retrieve the item from the order, e.g. $order->getItems()
+        $this->assertCount(1, $order->getItems());
+    }
+
+    /**
+     * @test
+     */
+    public function multiple_items_can_be_added_to_an_order()
+    {
+        // Setup
+
+        $multiple = 3;
+
+        // Need a product for the order
+        $name = 'Product 1 Name';
+        $description = 'Product 1 Description';
+        $price = 10099;
+
+        $product = new Product();
+        $product->setName($name);
+        $product->setDescription($description);
+        $product->setPrice($price);
+
+        $this->entityManager->persist($product);
+        $this->entityManager->flush();
+
+        // Need an order for the item
+
+        $order = $this->entityManager->getRepository(Order::class)->findOneBy([
+            'deliveryName' => $this->deliveryName,
+            'deliveryAddress' => $this->deliveryAddress,
+        ]);
+
+        // Act
+        // Create an item using refs to the order and product
+
+        for ($i = 1; $i <= $multiple; $i++) {
+            $item = new Item();
+            $item->setOrder($order);
+            $item->setProduct($product);
+            $item->setPrice($product->getPrice());
+
+
+            $this->entityManager->persist($item);
+        }
+
+        $this->entityManager->flush();
+
+        // Assert
+        // The item is in the order
+
+        $this->assertDatabaseHas(Item::class, [
+            'price' => $product->getPrice(),
+        ]);
+
+        // Check that we can retrieve the item from the order, e.g. $order->getItems()
+        $this->assertCount($multiple, $order->getItems());
     }
 }

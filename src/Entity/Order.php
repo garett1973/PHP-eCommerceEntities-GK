@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -27,6 +28,11 @@ class Order
      * @ORM\Column(type="text")
      */
     private $deliveryAddress;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Item", mappedBy="order")
+     */
+    private $items;
 
     /**
      * @ORM\Column(type="datetime", name="created_at")
@@ -91,6 +97,7 @@ class Order
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->items = new ArrayCollection();
     }
 
     /**
@@ -109,5 +116,19 @@ class Order
         $this->cancelledAt = $cancelledAt;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getItems()
+    {
+        return $this->items;
+    }
 
+    /**
+     * @param mixed $items
+     */
+    public function addItem(Item $item): void
+    {
+        $this->items[] = $item;
+    }
 }
