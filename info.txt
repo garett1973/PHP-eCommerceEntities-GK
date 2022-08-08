@@ -1,0 +1,9 @@
+to start local server for testing
+
+cd public
+php -S localhost:8000
+
+http://localhost:8000/products/view.php?id=1#
+
+php vendor/bin/phpunit tests/ProductsTests.php
+php vendor/bin/phpunit tests/OrdersTests.php
